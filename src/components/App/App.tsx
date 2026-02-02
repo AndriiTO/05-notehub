@@ -15,6 +15,7 @@ export default function App() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [prevData, setPrevData] = useState<FetchNotesResponse | null>(null);
 
   const debouncedSearch = useDebouncedCallback((value: string) => {
     setPage(1);
@@ -27,7 +28,11 @@ export default function App() {
     staleTime: 5000,
   });
 
-  const data: FetchNotesResponse = query.data ?? { notes: [], totalPages: 1 };
+  const data = query.data ?? prevData ?? { notes: [], totalPages: 1 };
+
+  if (query.data && query.data !== prevData) {
+    setPrevData(query.data);
+  }
 
   return (
     <div className={css.app}>
