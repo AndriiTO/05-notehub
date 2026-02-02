@@ -16,48 +16,34 @@ export default function App() {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
- 
   const debouncedSearch = useDebouncedCallback((value: string) => {
-    setPage(1); 
+    setPage(1);
     setSearch(value);
   }, 500);
 
-  const { data, isLoading } = useQuery<FetchNotesResponse, Error>({
+  const query = useQuery<FetchNotesResponse, Error>({
     queryKey: ['notes', page, search],
     queryFn: () => fetchNotes({ page, perPage: PER_PAGE, search }),
     staleTime: 5000,
-    placeholderData: { notes: [], totalPages: 1 }, 
   });
+
+  const data: FetchNotesResponse = query.data ?? { notes: [], totalPages: 1 };
 
   return (
     <div className={css.app}>
-      {}
       <header className={css.toolbar}>
         <SearchBox onSearch={debouncedSearch} />
-
-        {data?.totalPages > 1 && (
-          <Pagination
-            page={page}
-            totalPages={data.totalPages}
-            onChange={setPage}
-          />
+        {data.totalPages > 1 && (
+          <Pagination page={page} totalPages={data.totalPages} onChange={setPage} />
         )}
-
-        <button
-          className={css.button}
-          onClick={() => setIsModalOpen(true)}
-        >
+        <button className={css.button} onClick={() => setIsModalOpen(true)}>
           Create note +
         </button>
       </header>
 
-      
-      {isLoading && <p>Loading notes...</p>}
+      {query.isLoading && <p>Loading notes...</p>}
+      {data.notes.length > 0 ? <NoteList notes={data.notes} /> : <p>No notes found.</p>}
 
-  
-      {data?.notes.length > 0 && <NoteList notes={data.notes} />}
-
-    
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>
           <NoteForm onClose={() => setIsModalOpen(false)} />
@@ -65,5 +51,4 @@ export default function App() {
       )}
     </div>
   );
-}
 }
