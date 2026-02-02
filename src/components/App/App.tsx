@@ -22,12 +22,13 @@ export default function App() {
     setSearch(value);
   }, 500);
 
-  const query = useQuery<FetchNotesResponse, Error>({
+    const query = useQuery<FetchNotesResponse, Error>({
     queryKey: ['notes', page, search],
     queryFn: () => fetchNotes({ page, perPage: PER_PAGE, search }),
     staleTime: 5000,
+    placeholderData: (prevData) => prevData ?? { notes: [], totalPages: 1 },
   });
-
+  
   const data = query.data ?? prevData ?? { notes: [], totalPages: 1 };
 
   if (query.data && query.data !== prevData) {
