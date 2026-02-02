@@ -26,7 +26,7 @@ export default function App() {
     queryKey: ['notes', page, search],
     queryFn: () => fetchNotes({ page, perPage: PER_PAGE, search }),
     staleTime: 5000,
-    placeholderData: (prevData) => prevData ?? { notes: [], totalPages: 1 },
+     placeholderData: (prev) => prev,
   });
   
   const data = query.data ?? prevData ?? { notes: [], totalPages: 1 };
